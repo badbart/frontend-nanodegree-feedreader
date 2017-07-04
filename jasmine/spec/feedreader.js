@@ -72,7 +72,7 @@ $(
        * Check if menu is hidden by default
        */
       it("menu hidden by default", function() {
-        expect(body.className).toContain("menu-hidden");
+        expect(body.classList).toContain("menu-hidden");
       });
 
       /**
@@ -80,10 +80,10 @@ $(
        */
       it("menu toggles on click", function() {
         menuButton.click();
-        expect(body.className).not.toContain("menu-hidden");
+        expect(body.classList).not.toContain("menu-hidden");
 
         menuButton.click();
-        expect(body.className).toContain("menu-hidden");
+        expect(body.classList).toContain("menu-hidden");
       });
     });
 
@@ -96,22 +96,18 @@ $(
        * Will load the Feed
        */
       beforeEach(function(done) {
-        loadFeed(0, function() {
-          done();
-        });
+        loadFeed(0, done);
       });
 
       /**
        * Checks if after first Load of the Feed Data, there will be at least one Entry in the Feed
        */
-      it("after initial load at least one Item in Feed", function(done) {
+      it("after initial load at least one Item in Feed", function() {
         var entriesLength = document
           .querySelector(".feed")
           .querySelectorAll(".entry").length;
 
         expect(entriesLength).toBeGreaterThan(0);
-
-        done();
       });
     });
 
