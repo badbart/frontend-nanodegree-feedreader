@@ -22,17 +22,28 @@ $(
          * allFeeds in app.js to be an empty array and refresh the
          * page?
          */
+
+      /**
+       * Check if Feeds Variable is defined and not empty
+       */
       it("are defined", function() {
         expect(allFeeds).toBeDefined();
         expect(allFeeds.length).not.toBe(0);
       });
 
+      /**
+       * Check if all Feeds have an URL
+       */
       it("has URL", function() {
         allFeeds.forEach(function(element) {
           notNullOrEmpty(element.url);
+          expect(element.url).toMatch(/^(http|https):\/\//);
         });
       });
 
+      /**
+       * Check if all Feeds have a Name
+       */
       it("has Name", function() {
         allFeeds.forEach(function(element) {
           notNullOrEmpty(element.name);
@@ -49,34 +60,91 @@ $(
       }
     });
 
-    describe("The menu", function() {});
+    /**
+     * All checks for The menu
+     */
+    describe("The menu", function() {
+      // Initial load of DOM Variables used by the Tests
+      var body = document.body;
+      var menuButton = document.querySelector(".menu-icon-link");
 
-    /* TODO: Write a test that ensures the menu element is
-         * hidden by default. You'll have to analyze the HTML and
-         * the CSS to determine how we're performing the
-         * hiding/showing of the menu element.
-         */
+      /**
+       * Check if menu is hidden by default
+       */
+      it("menu hidden by default", function() {
+        expect(body.className).toContain("menu-hidden");
+      });
 
-    /* TODO: Write a test that ensures the menu changes
-          * visibility when the menu icon is clicked. This test
-          * should have two expectations: does the menu display when
-          * clicked and does it hide when clicked again.
-          */
+      /**
+       * Check if Menu is shown by click and after that hidden again by click
+       */
+      it("menu toggles on click", function() {
+        menuButton.click();
+        expect(body.className).not.toContain("menu-hidden");
 
-    /* TODO: Write a new test suite named "Initial Entries" */
+        menuButton.click();
+        expect(body.className).toContain("menu-hidden");
+      });
+    });
 
-    /* TODO: Write a test that ensures when the loadFeed
-         * function is called and completes its work, there is at least
-         * a single .entry element within the .feed container.
-         * Remember, loadFeed() is asynchronous so this test will require
-         * the use of Jasmine's beforeEach and asynchronous done() function.
-         */
+    /**
+     * All checks of the initial Entries
+     */
+    describe("Initial Entries", function() {
+      /**
+       * Initial Function to Run before each Test
+       * Will load the Feed
+       */
+      beforeEach(function(done) {
+        loadFeed(0, function() {
+          done();
+        });
+      });
 
-    /* TODO: Write a new test suite named "New Feed Selection" */
+      /**
+       * Checks if after first Load of the Feed Data, there will be at least one Entry in the Feed
+       */
+      it("after initial load at least one Item in Feed", function(done) {
+        var entriesLength = document
+          .querySelector(".feed")
+          .querySelectorAll(".entry").length;
 
-    /* TODO: Write a test that ensures when a new feed is loaded
-         * by the loadFeed function that the content actually changes.
-         * Remember, loadFeed() is asynchronous.
-         */
+        expect(entriesLength).toBeGreaterThan(0);
+
+        done();
+      });
+    });
+
+    /**
+     * All Checks for the Selection of a new Feed
+     */
+    describe("New Feed Selection", function() {
+      // Initial State of the Feed before loading anything
+      var feedSelectionBeginning;
+
+      /**
+       * Initial Function to Run before each test
+       * Loads a Feed, Saves the Feed State and than changes the Feed
+       */
+      beforeEach(function(done) {
+        loadFeed(0, function() {
+          feedSelectionBeginning = document.querySelector(".feed").innerHTML;
+
+          loadFeed(1, function() {
+            done();
+          });
+        });
+      });
+
+      /**
+       * check if Feeds change after Selecting a new one
+       */
+      it("feed content changes after load", function(done) {
+        var feedSelectionAfterLoad = document.querySelector(".feed").innerHTML;
+
+        expect(feedSelectionAfterLoad).not.toBe(feedSelectionBeginning);
+        done();
+      });
+    });
   })()
 );
